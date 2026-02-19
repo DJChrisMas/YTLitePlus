@@ -137,13 +137,14 @@ jobs:
           echo "YT_VERSION=$(grep -A 1 '<key>CFBundleVersion</key>' tmp/Payload/YouTube.app/Info.plist | grep '<string>' | awk -F'[><]' '{print $3}')" >> $GITHUB_ENV
           # Fetch the latest YTLite version from GitHub API (authenticated to avoid rate limits)
           YTLITE_VERSION=$(
-            curl -fsSL \
-              -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              https://api.github.com/repos/dayanch96/YTLite/releases/latest \
-            | jq -r '.tag_name // empty' \
-            | sed 's/^v//'
+          curl -fsSL \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/dayanch96/YTLite/releases/latest \
+          | jq -r '.tag_name // empty' \
+          | sed 's/^v//'
           )
+
           
           if [ -z "$YTLITE_VERSION" ]; then
             echo "::error::Failed to fetch latest YTLite version from GitHub API"
@@ -174,6 +175,7 @@ jobs:
           # Manually install the Open in YouTube extension
           cp -R Extensions/*.appex tmp/Payload/YouTube.app/PlugIns
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           THEOS: ${{ github.workspace }}/theos
           YOUTUBE_URL: ${{ env.URL_YT }}
 
